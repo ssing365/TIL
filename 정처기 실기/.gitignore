@@ -1,0 +1,8 @@
+# VS Code 관련 설정 파일 무시
+.vscode/
+tasks.json
+info.plist
+
+# 임시파일 일단 특정해서 제거
+24-03-10
+24-03-10.dSYM
