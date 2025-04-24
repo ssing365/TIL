@@ -436,3 +436,129 @@ HTTP를 정의한 공식문서(RFC 9110)
     - 속도 측면에서 큰 개선, 현재 빠르게 성장하는 프로토콜
 
 </aside>
+
+### 05-3 HTTP 헤더와 HTTP 기반 기술
+
+- 필드 라인 공부할 차례~
+
+![스크린샷 2025-04-23 오후 6.14.35.jpg](./images/Chapter05/12.jpg)
+
+- 필드라인에는 HTTP 헤더들이 명시된다.
+- HTTP 헤더는 필드 이름과 필드 값이 콜론(:)을 기준으로 구분되어 있다.
+- 중요 헤더 중에는 특별한 사전 지식이 필요하지 않은 헤더, 사전 지식이 필요한 헤더(캐시, 쿠키, 콘텐츠 협상 관련)가 있다.
+
+### HTTP 헤더
+
+> 사전 지식 없이 이해할 수 있는 헤더들
+> 
+- 요청 시 주로 사용되는 헤더
+    1. **Host**
+        - **요청을 보낼 호스트를 나타내는 헤더**
+        - 주로 도메인 네임 명시
+        
+        ```
+        GET /hypertext/WWW/TheProject.html HTTP/1.1
+        **Host: info.cern.ch**
+        ```
+        
+    2. **User-Agent**
+        - **웹 브라우저와 같이 HTTP 요청을 시작하는 클라이언트 측의 프로그램**
+        
+        ![스크린샷 2025-04-23 오후 6.20.20.jpg](./images/Chapter05/13.jpg)
+        
+    3. **Referer**
+        
+        ```
+        Referer: https://en.wikipedia.org/
+        ```
+        
+        - **클라이언트가 요청을 보낼 때 머무르고 있던 URL**
+        - 클라이언트의 유입 경로를 파악해 볼 수 있다.
+    4. **Authorization**
+        
+        ```
+        Authorization:<type> <credentials>
+        ```
+        
+        - **클라이언트의 인증 정보를 담는 헤더**
+        - 인증 타입과 인증을 위한 정보(credentials)가 명시됨
+        - **가장 기본적인 HTTP인증 타입은 Basic**이다.
+            - username:password와 같이 아이디와 비번을 :으로 합치고 **Base64 인코딩**한 값을 인증 정보로 담는다.
+            
+            ```
+            **Authorization: Basic bQWlvaoi23nlk**
+            ```
+            
+- 응답 시 주로 사용되는 헤더
+    1. **Server**
+        - 요청을 처리하는 **서버 측의 소프트웨어와 관련된 정보**
+            - Unix 운영체제에서 동작하는 아파치 HTTP서버
+                
+                ```
+                Server: Apache/2.4.1(Unix)
+                ```
+                
+    2. **Allow**
+        - **클라이언트에게 허용된 HTTP메서드 목록을 알려주기 위해 사용**
+        - 요청한 메서드를 지원하지 않는 상태코드 **405**(Mehtod Not Allowed)를 응답하는 메시지에서 **Allow가 함께 사용된다.**
+            
+            ![스크린샷 2025-04-24 오후 1.40.27.jpg](./images/Chapter05/14.jpg)
+            
+    3. **Retry-After**
+        - 현재 요청을 처리할 수 없으나 추후 가능할 수 있음을 의미하는 **503코드**와 함께 사용되는 헤더
+        - **자원을 사용할 수 있는 날짜 혹은 시각을 의미한다**.
+        
+        ```
+        Retry-After : Fri, 23 Aug 2024 09:00:00 GMT
+        Retry-After : 120 (120초 후)
+        ```
+        
+    4. **Location**
+        - **클라이언트에게 자원의 위치를 알려주는 헤더**
+        - **POST로 자원을 새로 생성했을 때**, 리다이렉션이 발생했을 때
+    5. **WWW-Authenticate**
+        - 요청한 자원에 대한 **유효한 인증이 없을 때 응답하는 401 코드**와 함께 사용되는 헤더
+        - **자원에 접근하기 위한 인증 방식을 설명하는 헤더**
+            
+            ```
+            WWW-Authenticate: Basic
+            ```
+            
+        - Authorization과 WWW-Authenticate 헤더를 통해 인증되지 않은 클라이언트가 HTTP(Basic)인증을 수행하는 과정
+            
+            ![스크린샷 2025-04-24 오후 1.53.24.jpg](./images/Chapter05/15.jpg)
+            
+- 요청과 응답 모두에서 활용되는 헤더
+    1. Date
+        - 메시지가 생성된 날짜와 시각에 관련된 정보를 담은 헤더
+    2. Connection
+        - 클라이언트의 요청과 응답 간의 연결 방식을 설정하는 헤더
+        - 대표적으로 사용되는 값은 keep-alive, close
+            - keep-alive
+                - 상대방에게 지속 연결을 희망함
+            - close
+                - 연결을 종료하고 싶을 때
+    3. Content-Length
+        - 본문의 바이트 단위 크기(길이)
+    4. Content-Type, Content-Length, Content-Encoding
+        - 메시지 본문의 표현 방식을 설명하는 헤더들
+        - 표현 헤더의 일종이다.
+        1. Content-Type
+            - 메시지 본문에서 사용된 미디어 타입
+            
+            ```
+            Content-Type: text/html; charset=UTF-8
+            ```
+            
+        2. Content-Length
+            - 메시지 본문에 사용된 자연어
+            - 첫 번째 서브 태그 - 두 번째 서브 태그 형식
+            - `en-US` , `ko-KR`
+        3. Content-Encoding
+            - 메시지 본문을 압축하거나 변환한 방식이 명시됨
+            - HTTP를 통해 송수신되는 데이터는 전송 속도를 개선하기 위해 종종 압축이나 변환이 되는데,
+            - 이 때 사용된 방식이 Content-Encoding 필드에 명시된다.
+            
+            ```
+            Content-Encoding: deflate, gzip, compress
+            ```
